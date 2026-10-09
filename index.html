@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Me | Luxury Handcrafted Chocolates & Sweets Sri Lanka</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- GSAP Animations & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <!-- Canvas Confetti for Delighters -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        choc: {
+                            900: '#120907',
+                            800: '#22120c',
+                            700: '#381c13',
+                            600: '#542b1d',
+                            500: '#733e2b',
+                            100: '#f7eee9'
+                        },
+                        gold: {
+                            600: '#b89228',
+                            500: '#d4af37',
+                            400: '#f0d376',
+                            300: '#fdf0bd',
+                        },
+                        cream: {
+                            50: '#fffdf9',
+                            100: '#fcf8f0',
+                            200: '#f3e8d3'
+                        }
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        playfair: ['"Playfair Display"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 4s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #120907;
+            color: #fcf8f0;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #120907; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #542b1d; 
+            border-radius: 4px;
+            border: 1px solid #d4af37;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d4af37; 
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #fff2c5 0%, #d4af37 50%, #aa8210 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gold-border-gradient {
+            border-image: linear-gradient(to right, #d4af37, #f0d376, #aa8210) 1;
+        }
+
+        .glass-card {
+            background: rgba(34, 18, 12, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(212, 175, 55, 0.6);
+            box-shadow: 0 10px 30px -10px rgba(212, 175, 55, 0.25);
+        }
+
+        .glow-effect {
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.25);
+        }
+
+        /* Pulse Ring for Floating WhatsApp Button */
+        .whatsapp-pulse {
+            box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+            animation: wa-pulse-anim 2s infinite;
+        }
+
+        @keyframes wa-pulse-anim {
+            0% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 18px rgba(37, 211, 102, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+            }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-gold-500 selection:text-choc-900 relative">
+
+    <!-- Background Animated Canvas -->
+    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-40"></canvas>
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-gradient-to-r from-choc-800 via-choc-700 to-choc-800 border-b border-gold-500/30 text-gold-300 text-xs py-2 px-4 text-center font-medium relative z-50 flex items-center justify-center gap-2">
+        <span class="animate-pulse">🎁</span>
+        <span>Free Handcrafted Ribbon Gift Box & Personal Note on Orders Above LKR 5,000!</span>
+        <a href="#shop" class="underline text-gold-400 hover:text-white transition-colors ml-2 hidden sm:inline">Order Now</a>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <nav id="navbar" class="sticky top-0 z-40 w-full transition-all duration-300 bg-choc-900/90 backdrop-blur-md border-b border-gold-500/20 py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            
+            <!-- Brand Logo -->
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-choc-900 font-bold text-xl shadow-lg transform group-hover:rotate-12 transition-transform duration-300">
+                    <i class="fa-solid fa-gift"></i>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-cinzel text-2xl font-bold tracking-widest gold-gradient-text uppercase">GIFT ME</span>
+                    <span class="text-[9px] text-gold-400/80 tracking-[0.3em] uppercase font-semibold">Luxury Chocolates</span>
+                </div>
+            </a>
+
+            <!-- Desktop Nav Links -->
+            <div class="hidden md:flex items-center space-x-8 text-sm font-medium">
+                <a href="#home" class="text-cream-100 hover:text-gold-400 transition-colors">Home</a>
+                <a href="#categories" class="text-cream-100 hover:text-gold-400 transition-colors">Categories</a>
+                <a href="#shop" class="text-cream-100 hover:text-gold-400 transition-colors">Collections</a>
+                <a href="#builder" class="text-gold-400 hover:text-gold-300 font-semibold transition-colors flex items-center gap-1">
+                    <i class="fa-solid fa-wand-magic-sparkles text-xs"></i> Build Your Box
+                </a>
+                <a href="#why-us" class="text-cream-100 hover:text-gold-400 transition-colors">Why Gift Me</a>
+                <a href="#faq" class="text-cream-100 hover:text-gold-400 transition-colors">FAQ</a>
+            </div>
+
+            <!-- Action Buttons & Cart -->
+            <div class="flex items-center gap-4">
+                <!-- Direct WhatsApp Fast Order Button -->
+                <a href="https://wa.me/94771234567?text=Hello%20Gift%20Me!%20I%20would%20like%20to%20inquire%20about%20your%20luxury%20chocolates." 
+                   target="_blank" 
+                   class="hidden lg:flex items-center gap-2 bg-emerald-600/20 border border-emerald-500/50 hover:bg-emerald-600 hover:border-emerald-500 text-emerald-300 hover:text-white px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 shadow-sm">
+                    <i class="fa-brands fa-whatsapp text-lg text-emerald-400"></i>
+                    <span>WhatsApp Order</span>
+                </a>
+
+                <!-- Cart Button -->
+                <button id="open-cart-btn" class="relative bg-choc-800 border border-gold-500/30 hover:border-gold-400 p-2.5 rounded-full text-gold-400 hover:text-gold-300 transition-all duration-300">
+                    <i class="fa-solid fa-basket-shopping text-lg"></i>
+                    <span id="cart-badge" class="absolute -top-1 -right-1 bg-gradient-to-r from-gold-500 to-gold-600 text-choc-900 font-extrabold text-[10px] w-5 h-5 rounded-full flex items-center justify-center shadow-md">0</span>
+                </button>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-toggle" class="md:hidden text-gold-400 text-2xl focus:outline-none p-1">
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Navigation Panel -->
+        <div id="mobile-menu" class="hidden md:hidden bg-choc-900/98 border-b border-gold-500/30 px-6 py-4 space-y-3">
+            <a href="#home" class="mobile-nav-link block text-cream-100 py-2 border-b border-choc-800">Home</a>
+            <a href="#categories" class="mobile-nav-link block text-cream-100 py-2 border-b border-choc-800">Categories</a>
+            <a href="#shop" class="mobile-nav-link block text-cream-100 py-2 border-b border-choc-800">Shop Collection</a>
+            <a href="#builder" class="mobile-nav-link block text-gold-400 font-semibold py-2 border-b border-choc-800 flex items-center justify-between">
+                <span>Build Custom Gift Box</span>
+                <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+            </a>
+            <a href="#why-us" class="mobile-nav-link block text-cream-100 py-2 border-b border-choc-800">Why Gift Me</a>
+            <a href="#faq" class="mobile-nav-link block text-cream-100 py-2">FAQ</a>
+            <a href="https://wa.me/94771234567?text=Hello%20Gift%20Me!%20I%20would%20like%20to%20order." target="_blank" class="w-full mt-2 bg-emerald-600 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+                <i class="fa-brands fa-whatsapp text-lg"></i> Order via WhatsApp
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative min-h-[90vh] flex items-center justify-center pt-8 pb-16 px-4 overflow-hidden">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+            
+            <!-- Left Hero Content -->
+            <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                <div class="inline-flex items-center gap-2 bg-choc-800/80 border border-gold-500/40 rounded-full px-4 py-1.5 backdrop-blur-md shadow-inner">
+                    <i class="fa-solid fa-crown text-gold-400 text-xs"></i>
+                    <span class="text-gold-300 text-xs font-semibold uppercase tracking-wider">100% Handcrafted Artisanal Chocolates</span>
+                </div>
+
+                <h1 class="font-playfair text-4xl sm:text-6xl lg:text-7xl font-bold leading-tight text-cream-50">
+                    Melt-in-the-Mouth <br>
+                    <span class="gold-gradient-text italic font-cinzel">Pure Indulgence</span>
+                </h1>
+
+                <p class="text-cream-200/80 text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 font-light leading-relaxed">
+                    Surprise your loved ones with Sri Lanka's finest gift chocolates! From creamy <strong class="text-gold-300">Chocolate Balls</strong> & luxury <strong class="text-gold-300">Packets</strong> to silky <strong class="text-gold-300">White Chocolate</strong>, gourmet <strong class="text-gold-300">Candies</strong>, and crunchy roasted <strong class="text-gold-300">Nuts</strong>.
+                </p>
+
+                <!-- Hero Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
+                    <a href="#shop" class="bg-gradient-to-r from-gold-500 via-gold-400 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-choc-900 font-bold px-8 py-4 rounded-full shadow-lg hover:shadow-gold-500/30 transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-3 group">
+                        <span>Explore Collection</span>
+                        <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                    
+                    <a href="https://wa.me/94771234567?text=Hello%20Gift%20Me!%20I%20want%20to%20place%20a%20custom%20chocolate%20gift%20order." 
+                       target="_blank" 
+                       class="bg-emerald-600/30 hover:bg-emerald-600 border border-emerald-500 text-emerald-300 hover:text-white font-semibold px-8 py-4 rounded-full transition-all duration-300 flex items-center justify-center gap-3 backdrop-blur-md">
+                        <i class="fa-brands fa-whatsapp text-xl"></i>
+                        <span>Direct WhatsApp Order</span>
+                    </a>
+                </div>
+
+                <!-- Trust Badges -->
+                <div class="grid grid-cols-3 gap-4 pt-8 border-t border-choc-800 text-center lg:text-left">
+                    <div>
+                        <div class="text-2xl font-bold font-cinzel text-gold-400">10,000+</div>
+                        <div class="text-xs text-cream-200/60 font-medium">Gifts Delivered</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold font-cinzel text-gold-400">100%</div>
+                        <div class="text-xs text-cream-200/60 font-medium">Fresh Cocoa Butter</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold font-cinzel text-gold-400">4.9 ★</div>
+                        <div class="text-xs text-cream-200/60 font-medium">Customer Rating</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Hero Visual Showcase -->
+            <div class="lg:col-span-5 relative flex justify-center">
+                <div class="relative w-full max-w-md aspect-square rounded-3xl overflow-hidden glass-card p-4 glow-effect animate-float">
+                    <img id="hero-img" 
+                         src="https://images.unsplash.com/photo-1549007994-cb92caebd54b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                         alt="Gift Me Premium Chocolate Box" 
+                         class="w-full h-full object-cover rounded-2xl shadow-2xl transition-all duration-700 hover:scale-105">
+                    
+                    <!-- Floating Highlight Tag 1 -->
+                    <div class="absolute top-8 right-8 bg-choc-900/90 border border-gold-500/50 p-3 rounded-2xl shadow-xl backdrop-blur-md flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gold-500/20 flex items-center justify-center text-gold-400">
+                            <i class="fa-solid fa-heart"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-[10px] text-gray-400 uppercase">Customer Favorite</p>
+                            <p class="text-xs font-bold text-cream-100">Hazelnut Rocher Balls</p>
+                        </div>
+                    </div>
+
+                    <!-- Floating Highlight Tag 2 -->
+                    <div class="absolute bottom-8 left-8 bg-choc-900/90 border border-gold-500/50 p-3 rounded-2xl shadow-xl backdrop-blur-md flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+                            <i class="fa-solid fa-truck-fast"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-[10px] text-gray-400 uppercase">Islandwide</p>
+                            <p class="text-xs font-bold text-cream-100">Express Delivery 🚚</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Categories Filter & Section Header -->
+    <section id="categories" class="py-12 bg-choc-800/40 border-y border-gold-500/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center max-w-3xl mx-auto mb-10">
+                <p class="text-gold-400 text-xs font-semibold tracking-widest uppercase mb-2">Our Artisanal Specialities</p>
+                <h2 class="font-playfair text-3xl sm:text-4xl font-bold text-cream-50">Explore By Sweet Category</h2>
+                <div class="w-16 h-0.5 bg-gradient-to-r from-transparent via-gold-400 to-transparent mx-auto mt-4"></div>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="flex flex-wrap justify-center gap-3 sm:gap-4" id="filter-buttons">
+                <button data-filter="all" class="filter-btn active bg-gold-500 text-choc-900 border border-gold-400 font-bold px-5 py-2.5 rounded-full text-xs sm:text-sm transition-all duration-300 shadow-md">
+                    ✨ All Sweets
+                </button>
+                <button data-filter="balls" class="filter-btn bg-choc-800 text-cream-100 border border-gold-500/20 hover:border-gold-400 font-medium px-5 py-2.5 rounded-full text-xs sm:text-sm transition-all duration-300">
+                    🔮 Chocolate Balls
+                </button>
+                <button data-filter="packets" class="filter-btn bg-choc-800 text-cream-100 border border-gold-500/20 hover:border-gold-400 font-medium px-5 py-2.5 rounded-full text-xs sm:text-sm transition-all duration-300">
+                    📦 Packets & Boxes
+                </button>
+                <button data-filter="white" class="filter-btn bg-choc-800 text-cream-100 border border-gold-500/20 hover:border-gold-400 font-medium px-5 py-2.5 rounded-full text-xs sm:text-sm transition-all duration-300">
+                    🤍 White Chocolate
+                </button>
+                <button data-filter="candies" class="filter-btn bg-choc-800 text-cream-100 border border-gold-500/20 hover:border-gold-400 font-medium px-5 py-2.5 rounded-full text-xs sm:text-sm transition-all duration-300">
+                    🍬 Candies & Toffees
+                </button>
+                <button data-filter="nuts" class="filter-btn bg-choc-800 text-cream-100 border border-gold-500/20 hover:border-gold-400 font-medium px-5 py-2.5 rounded-full text-xs sm:text-sm transition-all duration-300">
+                    🥜 Roasted Nuts
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Shop Catalog Grid -->
+    <section id="shop" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+            <div>
+                <h3 class="font-cinzel text-2xl font-bold text-gold-300">GIFT ME COLLECTIONS</h3>
+                <p class="text-xs text-cream-200/70">Select your favorite luxury sweets or order directly via WhatsApp.</p>
+            </div>
+            
+            <div class="text-xs text-gold-400/90 font-medium bg-choc-800 border border-gold-500/30 px-4 py-2 rounded-full">
+                Showing <span id="product-count">12</span> Handcrafted Delights
+            </div>
+        </div>
+
+        <!-- Dynamic Product Grid Container -->
+        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Products will be dynamically populated via JS -->
+        </div>
+    </section>
+
+    <!-- Build Your Own Box Interactive Tool -->
+    <section id="builder" class="py-20 bg-gradient-to-b from-choc-900 via-choc-800 to-choc-900 border-t border-gold-500/20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <span class="inline-block bg-gold-500/10 border border-gold-500/40 text-gold-300 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-3">
+                    ✨ Interactive Gift Creator
+                </span>
+                <h2 class="font-playfair text-3xl sm:text-5xl font-bold text-cream-50">Build Your Custom Gift Box</h2>
+                <p class="text-cream-200/70 text-sm mt-3">Mix and match chocolate balls, candies, white chocos, and nuts. We'll custom-pack it in a golden ribbon box with your personalized gift message!</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Left Builder Options -->
+                <div class="lg:col-span-8 glass-card p-6 sm:p-8 rounded-3xl space-y-8">
+                    
+                    <!-- Step 1: Select Box Packaging -->
+                    <div>
+                        <h4 class="font-cinzel text-lg font-bold text-gold-300 mb-4 flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full bg-gold-500 text-choc-900 flex items-center justify-center text-xs font-extrabold">1</span>
+                            Choose Packaging Style
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="box-style-options">
+                            <label class="cursor-pointer bg-choc-800 border-2 border-gold-500 rounded-2xl p-4 flex flex-col items-center text-center transition-all hover:bg-choc-700 box-option active" data-style="Royal Velvet Box" data-price="1200">
+                                <i class="fa-solid fa-box-open text-gold-400 text-2xl mb-2"></i>
+                                <span class="font-bold text-sm text-cream-100">Royal Velvet Box</span>
+                                <span class="text-xs text-gold-400 font-semibold mt-1">+ LKR 1,200</span>
+                            </label>
+                            
+                            <label class="cursor-pointer bg-choc-800 border-2 border-choc-600 rounded-2xl p-4 flex flex-col items-center text-center transition-all hover:bg-choc-700 box-option" data-style="Golden Ribbon Box" data-price="800">
+                                <i class="fa-solid fa-gift text-gold-400 text-2xl mb-2"></i>
+                                <span class="font-bold text-sm text-cream-100">Golden Ribbon Box</span>
+                                <span class="text-xs text-gold-400 font-semibold mt-1">+ LKR 800</span>
+                            </label>
+
+                            <label class="cursor-pointer bg-choc-800 border-2 border-choc-600 rounded-2xl p-4 flex flex-col items-center text-center transition-all hover:bg-choc-700 box-option" data-style="Luxury Wooden Keepsake" data-price="2500">
+                                <i class="fa-solid fa-cubes text-gold-400 text-2xl mb-2"></i>
+                                <span class="font-bold text-sm text-cream-100">Wooden Keepsake</span>
+                                <span class="text-xs text-gold-400 font-semibold mt-1">+ LKR 2,500</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Select Items to Put in Box -->
+                    <div>
+                        <h4 class="font-cinzel text-lg font-bold text-gold-300 mb-4 flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full bg-gold-500 text-choc-900 flex items-center justify-center text-xs font-extrabold">2</span>
+                            Select Your Sweet Mix
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-80 overflow-y-auto pr-2" id="builder-items-list">
+                            <!-- JS populated list for builder items -->
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Personalized Card Message -->
+                    <div>
+                        <h4 class="font-cinzel text-lg font-bold text-gold-300 mb-4 flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full bg-gold-500 text-choc-900 flex items-center justify-center text-xs font-extrabold">3</span>
+                            Personalized Greeting Card (Free)
+                        </h4>
+                        <textarea id="custom-card-text" rows="3" placeholder="Write your heartfelt message here (e.g. Happy Birthday Nimesha! Hope your day is as sweet as these chocolates!)..." class="w-full bg-choc-800 border border-gold-500/30 rounded-2xl p-4 text-sm text-cream-100 focus:outline-none focus:border-gold-400 resize-none"></textarea>
+                    </div>
+
+                </div>
+
+                <!-- Right Builder Live Summary -->
+                <div class="lg:col-span-4 glass-card p-6 sm:p-8 rounded-3xl sticky top-24 border-2 border-gold-500/40">
+                    <h3 class="font-cinzel text-xl font-bold text-gold-300 border-b border-gold-500/20 pb-4 mb-4 flex justify-between items-center">
+                        <span>Your Custom Box</span>
+                        <i class="fa-solid fa-gift text-gold-400"></i>
+                    </h3>
+
+                    <div class="space-y-4 text-sm">
+                        <div class="flex justify-between items-center text-cream-200/80">
+                            <span>Selected Box:</span>
+                            <span id="summary-box-style" class="font-semibold text-gold-300">Royal Velvet Box</span>
+                        </div>
+
+                        <div class="border-t border-choc-700 pt-3">
+                            <span class="text-xs text-gray-400 uppercase font-semibold">Included Items:</span>
+                            <ul id="summary-items-list" class="mt-2 space-y-1 text-xs text-cream-100/90 max-h-36 overflow-y-auto">
+                                <li class="text-gray-500 italic">No items selected yet...</li>
+                            </ul>
+                        </div>
+
+                        <div class="border-t border-choc-700 pt-3 flex justify-between items-center text-lg font-bold">
+                            <span class="text-cream-50">Total Price:</span>
+                            <span id="summary-total-price" class="text-gold-400 font-cinzel">LKR 1,200</span>
+                        </div>
+                    </div>
+
+                    <!-- Direct Order Custom Box Button -->
+                    <button id="submit-custom-box-btn" class="w-full mt-6 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-600 text-white font-bold py-4 rounded-2xl shadow-lg transition-all duration-300 flex items-center justify-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-xl"></i>
+                        <span>Order Custom Box via WhatsApp</span>
+                    </button>
+
+                    <p class="text-[11px] text-gray-400 text-center mt-3">
+                        <i class="fa-solid fa-shield-halved text-gold-400 mr-1"></i> Direct confirmation with our chocolate artisan on WhatsApp.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Why Choose Gift Me Section -->
+    <section id="why-us" class="py-20 bg-choc-900 border-t border-gold-500/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <p class="text-gold-400 text-xs font-semibold tracking-widest uppercase mb-2">Unmatched Quality & Passion</p>
+                <h2 class="font-playfair text-3xl sm:text-5xl font-bold text-cream-50">Why "Gift Me" Is Unique</h2>
+                <div class="w-16 h-0.5 bg-gradient-to-r from-transparent via-gold-400 to-transparent mx-auto mt-4"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <div class="glass-card p-8 rounded-3xl text-center space-y-4 hover:transform hover:-translate-y-2 transition-all">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-gold-400 to-gold-600 text-choc-900 mx-auto flex items-center justify-center text-2xl font-bold shadow-lg">
+                        <i class="fa-solid fa-seedling"></i>
+                    </div>
+                    <h3 class="font-cinzel text-xl font-bold text-gold-300">Pure Imported Ingredients</h3>
+                    <p class="text-xs text-cream-200/70 leading-relaxed">Made using 100% genuine cocoa butter, whole roasted nuts, and premium Belgian-grade white and dark chocolates.</p>
+                </div>
+
+                <div class="glass-card p-8 rounded-3xl text-center space-y-4 hover:transform hover:-translate-y-2 transition-all">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-gold-400 to-gold-600 text-choc-900 mx-auto flex items-center justify-center text-2xl font-bold shadow-lg">
+                        <i class="fa-solid fa-ribbon"></i>
+                    </div>
+                    <h3 class="font-cinzel text-xl font-bold text-gold-300">Custom Gift Packaging</h3>
+                    <p class="text-xs text-cream-200/70 leading-relaxed">Every order is wrapped in luxury boxes with satin ribbons and personalized cards, ready to gift right out of the box.</p>
+                </div>
+
+                <div class="glass-card p-8 rounded-3xl text-center space-y-4 hover:transform hover:-translate-y-2 transition-all">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-gold-400 to-gold-600 text-choc-900 mx-auto flex items-center justify-center text-2xl font-bold shadow-lg">
+                        <i class="fa-solid fa-temperature-arrow-down"></i>
+                    </div>
+                    <h3 class="font-cinzel text-xl font-bold text-gold-300">Cool Delivery Guard</h3>
+                    <p class="text-xs text-cream-200/70 leading-relaxed">Delivered in insulated cool packs across Colombo and islandwide express shipping so your chocolates never melt.</p>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-20 bg-choc-800/30 border-t border-gold-500/10">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center mb-12">
+                <span class="text-gold-400 text-xs font-semibold uppercase tracking-widest">Help & Info</span>
+                <h2 class="font-playfair text-3xl sm:text-4xl font-bold text-cream-50 mt-2">Frequently Asked Questions</h2>
+            </div>
+
+            <div class="space-y-4" id="faq-accordion">
+                
+                <div class="glass-card rounded-2xl overflow-hidden">
+                    <button class="faq-toggle w-full p-5 text-left font-bold text-sm text-gold-300 flex justify-between items-center focus:outline-none">
+                        <span>How do I order via WhatsApp?</span>
+                        <i class="fa-solid fa-chevron-down transition-transform"></i>
+                    </button>
+                    <div class="faq-content hidden p-5 pt-0 text-xs text-cream-200/80 border-t border-choc-700/50 leading-relaxed">
+                        Simply add your items to the cart or build a custom gift box, then click "Checkout via WhatsApp". It will automatically open WhatsApp with a structured list of your order ready to send to us!
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl overflow-hidden">
+                    <button class="faq-toggle w-full p-5 text-left font-bold text-sm text-gold-300 flex justify-between items-center focus:outline-none">
+                        <span>What is the shelf life of Gift Me chocolates?</span>
+                        <i class="fa-solid fa-chevron-down transition-transform"></i>
+                    </button>
+                    <div class="faq-content hidden p-5 pt-0 text-xs text-cream-200/80 border-t border-choc-700/50 leading-relaxed">
+                        Our chocolates and nut clusters stay fresh for up to 3 months when stored in a cool place (18°C-22°C) or refrigerator.
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl overflow-hidden">
+                    <button class="faq-toggle w-full p-5 text-left font-bold text-sm text-gold-300 flex justify-between items-center focus:outline-none">
+                        <span>Do you deliver islandwide in Sri Lanka?</span>
+                        <i class="fa-solid fa-chevron-down transition-transform"></i>
+                    </button>
+                    <div class="faq-content hidden p-5 pt-0 text-xs text-cream-200/80 border-t border-choc-700/50 leading-relaxed">
+                        Yes! We provide same-day/next-day express delivery in Colombo and fast courier delivery across all districts in Sri Lanka.
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl overflow-hidden">
+                    <button class="faq-toggle w-full p-5 text-left font-bold text-sm text-gold-300 flex justify-between items-center focus:outline-none">
+                        <span>Can I customize corporate or birthday gift boxes?</span>
+                        <i class="fa-solid fa-chevron-down transition-transform"></i>
+                    </button>
+                    <div class="faq-content hidden p-5 pt-0 text-xs text-cream-200/80 border-t border-choc-700/50 leading-relaxed">
+                        Absolutely! We specialize in corporate event hampers, birthday surprises, anniversary gifts, and wedding favors. Contact us on WhatsApp for bulk discounts.
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-choc-950 text-cream-200/70 pt-16 pb-8 border-t border-gold-500/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+                
+                <div class="space-y-4">
+                    <a href="#" class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gold-500 flex items-center justify-center text-choc-900 font-bold">
+                            <i class="fa-solid fa-gift"></i>
+                        </div>
+                        <span class="font-cinzel text-xl font-bold tracking-widest gold-gradient-text">GIFT ME</span>
+                    </a>
+                    <p class="text-xs leading-relaxed">Sri Lanka's luxury gift chocolate destination. Handcrafted chocolate balls, packets, white chocolates, candies, and nut clusters made with love.</p>
+                </div>
+
+                <div>
+                    <h4 class="font-cinzel text-gold-300 font-bold text-sm mb-4">Sweet Collections</h4>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="#shop" class="hover:text-gold-400 transition-colors">Chocolate Balls & Rochers</a></li>
+                        <li><a href="#shop" class="hover:text-gold-400 transition-colors">Gift Packets & Boxes</a></li>
+                        <li><a href="#shop" class="hover:text-gold-400 transition-colors">Silky White Chocolates</a></li>
+                        <li><a href="#shop" class="hover:text-gold-400 transition-colors">Gourmet Candies</a></li>
+                        <li><a href="#shop" class="hover:text-gold-400 transition-colors">Roasted Nut Clusters</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-cinzel text-gold-300 font-bold text-sm mb-4">Direct Contact</h4>
+                    <ul class="space-y-2 text-xs">
+                        <li class="flex items-center gap-2"><i class="fa-brands fa-whatsapp text-emerald-400"></i> +94 77 123 4567</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-envelope text-gold-400"></i> orders@giftmechocolates.lk</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-gold-400"></i> Colombo, Sri Lanka</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-cinzel text-gold-300 font-bold text-sm mb-4">Order Fast</h4>
+                    <p class="text-xs mb-3">Instant order placement directly via WhatsApp chat.</p>
+                    <a href="https://wa.me/94771234567?text=Hello%20Gift%20Me!%20I%20want%20to%20order." target="_blank" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-md">
+                        <i class="fa-brands fa-whatsapp text-base"></i> Chat on WhatsApp
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="border-t border-choc-800 pt-6 text-center text-[11px] text-gray-500">
+                &copy; 2026 Gift Me Luxury Chocolates Sri Lanka. All Rights Reserved. Crafted with ❤️ for Chocolate Lovers.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating WhatsApp Widget -->
+    <a href="https://wa.me/94771234567?text=Hello%20Gift%20Me!%20I%20would%20like%20to%20place%20an%20order." 
+       target="_blank" 
+       id="floating-wa-btn"
+       class="fixed bottom-6 right-6 z-50 bg-emerald-500 hover:bg-emerald-400 text-white p-4 rounded-full shadow-2xl whatsapp-pulse flex items-center justify-center transition-transform hover:scale-110">
+        <i class="fa-brands fa-whatsapp text-3xl"></i>
+    </a>
+
+    <!-- Product Quick View Modal -->
+    <div id="quickview-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-choc-950/80 backdrop-blur-md">
+        <div class="glass-card max-w-2xl w-full rounded-3xl p-6 sm:p-8 relative border-2 border-gold-500/40 text-cream-50 animate-float">
+            <button id="close-quickview" class="absolute top-4 right-4 text-gray-400 hover:text-gold-400 text-2xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
+                <div class="aspect-square rounded-2xl overflow-hidden bg-choc-800 border border-gold-500/30">
+                    <img id="qv-image" src="" alt="Product" class="w-full h-full object-cover">
+                </div>
+                <div class="space-y-4">
+                    <span id="qv-category" class="text-[10px] bg-gold-500/20 text-gold-300 font-bold uppercase tracking-widest px-3 py-1 rounded-full"></span>
+                    <h3 id="qv-title" class="font-playfair text-2xl font-bold text-cream-50"></h3>
+                    <p id="qv-price" class="font-cinzel text-xl font-bold text-gold-400"></p>
+                    <p id="qv-description" class="text-xs text-cream-200/80 leading-relaxed"></p>
+                    
+                    <div class="flex items-center gap-3 pt-2">
+                        <label class="text-xs font-semibold text-gray-300">Quantity:</label>
+                        <div class="flex items-center border border-gold-500/40 rounded-xl bg-choc-800">
+                            <button id="qv-minus" class="px-3 py-1 text-gold-400 hover:bg-choc-700 rounded-l-xl">-</button>
+                            <span id="qv-qty" class="px-4 text-xs font-bold">1</span>
+                            <button id="qv-plus" class="px-3 py-1 text-gold-400 hover:bg-choc-700 rounded-r-xl">+</button>
+                        </div>
+                    </div>
+
+                    <button id="qv-add-cart-btn" class="w-full mt-4 bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-choc-900 font-bold py-3.5 rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-cart-plus"></i> Add To Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shopping Cart Slide Drawer Modal -->
+    <div id="cart-drawer" class="fixed inset-0 z-50 hidden">
+        <!-- Backdrop -->
+        <div id="cart-backdrop" class="absolute inset-0 bg-choc-950/70 backdrop-blur-sm"></div>
+        
+        <!-- Drawer -->
+        <div class="absolute top-0 right-0 h-full w-full max-w-md bg-choc-900 border-l border-gold-500/30 p-6 flex flex-col justify-between shadow-2xl z-10">
+            <div>
+                <div class="flex justify-between items-center border-b border-gold-500/20 pb-4 mb-4">
+                    <h3 class="font-cinzel text-xl font-bold text-gold-300 flex items-center gap-2">
+                        <i class="fa-solid fa-basket-shopping"></i> Your Chocolate Cart
+                    </h3>
+                    <button id="close-cart-btn" class="text-gray-400 hover:text-gold-400 text-xl">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div id="cart-items-container" class="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+                    <!-- Cart items rendered here dynamically -->
+                </div>
+            </div>
+
+            <!-- Cart Footer Checkout -->
+            <div class="border-t border-gold-500/20 pt-4 space-y-4">
+                
+                <div>
+                    <label class="block text-xs font-semibold text-gold-300 mb-1">Delivery Address & Note:</label>
+                    <input type="text" id="cart-address-input" placeholder="e.g., No 45, Galle Road, Colombo 03" class="w-full bg-choc-800 border border-gold-500/30 rounded-xl px-3 py-2 text-xs text-cream-100 focus:outline-none focus:border-gold-400">
+                </div>
+
+                <div class="flex justify-between items-center text-lg font-bold">
+                    <span class="text-cream-100">Total:</span>
+                    <span id="cart-total-price" class="text-gold-400 font-cinzel">LKR 0</span>
+                </div>
+
+                <button id="cart-whatsapp-checkout-btn" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-600 text-white font-bold py-3.5 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-xl"></i>
+                    <span>Checkout via WhatsApp</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-6 left-6 z-50 hidden bg-choc-800 border border-gold-500 text-cream-100 px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transform transition-all duration-300">
+        <i class="fa-solid fa-circle-check text-gold-400 text-xl"></i>
+        <span id="toast-msg" class="text-xs font-medium">Item added to cart!</span>
+    </div>
+
+    <script>
+        const productsData = [
+            // Chocolate Balls Category
+            {
+                id: 1,
+                name: "Royal Gold Truffle Balls",
+                category: "balls",
+                categoryLabel: "Chocolate Balls",
+                price: 3200,
+                rating: 5.0,
+                badge: "Bestseller",
+                image: "https://images.unsplash.com/photo-1548907040-4baa42d10906?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                description: "Decadent dark chocolate truffles rolled in fine cocoa and 24K edible gold dust."
+            },
+            {
+                id: 2,
+                name: "Hazelnut Rocher Crunch Balls",
+                category: "balls",
+                categoryLabel: "Chocolate Balls",
+                price: 3800,
+                rating: 4.9,
+                badge: "Trending",
+                image: "https://images.unsplash.com/photo-1549007994-cb92caebd54b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                description: "Crispy wafer balls coated in silky milk chocolate and crushed roasted hazelnuts."
+            },
+
+            // Packets & Boxes Category
+            {
+                id: 3,
+                name: "Grand Celebration Gift Packet",
+                category: "packets",
+                categoryLabel: "Packets & Boxes",
+                price: 6500,
+                rating: 5.0,
+                badge: "Luxury Box",
+                image: "https://images.unsplash.com/photo-1511381939415-e440c9c40a6b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                description: "Deluxe ribbon packet filled with assorted dark pralines, white choco pearls, and nut clusters."
+            },
+            {
+                id: 4,
+                name: "Golden Heart Gift Box Packet",
+                category: "packets",
+                categoryLabel: "Packets & Boxes",
+                price: 4900,
+                rating: 4.8,
+                badge: "Romantic",
+                image: "https://images.unsplash.com/photo-1606312619070-d48b4c652a52?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                description: "Heart-shaped gift box filled with 16 signature handcrafted chocolate treats."
+            },
+
+            // White Chocolate Category
+            {
+                id: 5,
+                name: "Silky Vanilla White Chocolate",
+                category: "white",
+                categoryLabel: "White Chocolate",
+                price: 2200,
+                rating: 4.9,
+                badge: "Creamy",
+                image: "https://images.unsplash.com/photo-1614088031070-d79ebf374ce7?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                description: "Smooth Belgian white chocolate infused with natural Madagascar vanilla beans."
+            },
+            {
+                id: 6,
+                name: "Raspberry White Choco Pearls",
+                category: "white",
+                categoryLabel: "White Chocolate",
+                price: 2800,
+                rating: 4.7,
+                badge: "Chef Special",
+                image: "https://images.unsplash.com/photo-1582293041079-7814c2f12063?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                description: "Creamy white chocolate bites filled with tangy freeze-dried raspberry center."
+            },
+
+            // Candies Category
+            {
+                id: 7,
+                name: "Gourmet Honeycomb Candies",
+                category: "candies",
+                categoryLabel: "Candies & Toffees",
+                price: 1500,
+                rating: 4.8,
+                badge: "Sweet Crunch",
+                image: "https://images.unsplash.com/photo-1581798459219-318e76aecc7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                description: "Light, airy golden honeycomb candy dipped in rich milk chocolate."
+            },
+            {
+                id: 8,
+                name: "Butterscotch Caramel Toffees",
+                category: "candies",
+                categoryLabel: "Candies & Toffees",
+                price: 1800,
+                rating: 4.9,
+                badge: "Chewy",
+                image: "https://images.unsplash.com/photo-1575224300306-1b8da36134ec?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                description: "Hand-stretched golden butterscotch caramel candies wrapped in luxury foil."
+            },
+
+            // Nuts Category
+            {
+                id: 9,
+                name: "Golden Roasted Cashew Crunch",
+                category: "nuts",
+                categoryLabel: "Roasted Nuts",
+                price: 2600,
+                rating: 5.0,
+                badge: "Nutty Favorite",
+                image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                description: "Whole jumbo Sri Lankan cashews double-coated in caramelized chocolate."
+            },
+            {
+                id: 10,
+                name: "Dark Almond Cluster Medley",
+                category: "nuts",
+                categoryLabel: "Roasted Nuts",
+                price: 2900,
+                rating: 4.9,
+                badge: "Healthy Choice",
+                image: "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                description: "Slow-roasted California almonds bound in 70% dark single-origin chocolate."
+            },
+            {
+                id: 11,
+                name: "Pistachio White Choco Bites",
+                category: "nuts",
+                categoryLabel: "Roasted Nuts",
+                price: 3100,
+                rating: 4.8,
+                badge: "Premium",
+                image: "https://images.unsplash.com/photo-1526080652727-5b77f74eada2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                description: "Salty-sweet Iranian pistachios set in velvety white chocolate blocks."
+            },
+            {
+                id: 12,
+                name: "Hazelnut Praline Gift Packet",
+                category: "packets",
+                categoryLabel: "Packets & Boxes",
+                price: 4200,
+                rating: 5.0,
+                badge: "Gift Special",
+                image: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                description: "Elegant chocolate packet featuring 12 hand-decorated hazelnut pralines."
+            }
+        ];
+
+        let cart = [];
+        let currentQVProduct = null;
+        let qvQuantity = 1;
+
+        // Custom Box Builder State
+        let customBoxStyle = "Royal Velvet Box";
+        let customBoxPrice = 1200;
+        let selectedBuilderItems = [];
+
+        function renderProducts(filter = "all") {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = '';
+
+            const filtered = filter === "all" ? productsData : productsData.filter(p => p.category === filter);
+            document.getElementById('product-count').innerText = filtered.length;
+
+            filtered.forEach(product => {
+                const card = document.createElement('div');
+                card.className = "glass-card rounded-3xl overflow-hidden flex flex-col justify-between group transform transition-all duration-300 hover:-translate-y-2";
+                
+                card.innerHTML = `
+                    <div class="relative aspect-square overflow-hidden bg-choc-800">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <span class="absolute top-3 left-3 bg-gradient-to-r from-gold-500 to-gold-600 text-choc-900 font-extrabold text-[10px] uppercase px-3 py-1 rounded-full shadow-md">
+                            ${product.badge}
+                        </span>
+                        <button onclick="openQuickView(${product.id})" class="absolute bottom-3 right-3 bg-choc-900/90 text-gold-400 p-2.5 rounded-full hover:bg-gold-500 hover:text-choc-900 transition-colors shadow-lg">
+                            <i class="fa-solid fa-eye text-xs"></i>
+                        </button>
+                    </div>
+
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-3">
+                        <div>
+                            <span class="text-[10px] text-gold-400 uppercase font-bold tracking-wider">${product.categoryLabel}</span>
+                            <h4 class="font-playfair font-bold text-lg text-cream-50 mt-1 line-clamp-1">${product.name}</h4>
+                            <p class="text-xs text-cream-200/70 mt-1 line-clamp-2 font-light">${product.description}</p>
+                        </div>
+
+                        <div class="pt-3 border-t border-choc-700/50 flex justify-between items-center">
+                            <div>
+                                <span class="text-xs text-gray-400">LKR</span>
+                                <span class="font-cinzel text-lg font-bold text-gold-300">${product.price.toLocaleString()}</span>
+                            </div>
+                            <button onclick="addToCart(${product.id})" class="bg-gold-500 hover:bg-gold-400 text-choc-900 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md">
+                                <i class="fa-solid fa-plus"></i> Add
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderBuilderItems() {
+            const container = document.getElementById('builder-items-list');
+            container.innerHTML = '';
+
+            productsData.forEach(p => {
+                const itemEl = document.createElement('div');
+                itemEl.className = "flex items-center justify-between bg-choc-800/80 p-3 rounded-2xl border border-choc-700";
+                itemEl.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <img src="${p.image}" class="w-10 h-10 rounded-xl object-cover">
+                        <div>
+                            <p class="text-xs font-bold text-cream-100">${p.name}</p>
+                            <p class="text-[10px] text-gold-400">LKR ${p.price.toLocaleString()}</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleBuilderItem(${p.id})" id="builder-btn-${p.id}" class="bg-choc-700 text-gold-400 hover:bg-gold-500 hover:text-choc-900 px-3 py-1 rounded-xl text-xs font-bold transition-all">
+                        + Select
+                    </button>
+                `;
+                container.appendChild(itemEl);
+            });
+        }
+
+        function toggleBuilderItem(id) {
+            const product = productsData.find(p => p.id === id);
+            const index = selectedBuilderItems.findIndex(item => item.id === id);
+            const btn = document.getElementById(`builder-btn-${id}`);
+
+            if (index > -1) {
+                selectedBuilderItems.splice(index, 1);
+                btn.className = "bg-choc-700 text-gold-400 hover:bg-gold-500 hover:text-choc-900 px-3 py-1 rounded-xl text-xs font-bold transition-all";
+                btn.innerText = "+ Select";
+            } else {
+                selectedBuilderItems.push(product);
+                btn.className = "bg-emerald-600 text-white px-3 py-1 rounded-xl text-xs font-bold transition-all";
+                btn.innerText = "✓ Added";
+            }
+
+            updateBuilderSummary();
+        }
+
+        function updateBuilderSummary() {
+            document.getElementById('summary-box-style').innerText = customBoxStyle;
+            const itemsList = document.getElementById('summary-items-list');
+            itemsList.innerHTML = '';
+
+            if (selectedBuilderItems.length === 0) {
+                itemsList.innerHTML = `<li class="text-gray-500 italic">No sweets selected yet...</li>`;
+            } else {
+                selectedBuilderItems.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = "flex justify-between items-center text-cream-100";
+                    li.innerHTML = `<span>• ${item.name}</span> <span class="text-gold-400">LKR ${item.price.toLocaleString()}</span>`;
+                    itemsList.appendChild(li);
+                });
+            }
+
+            const itemsTotal = selectedBuilderItems.reduce((sum, item) => sum + item.price, 0);
+            const total = customBoxPrice + itemsTotal;
+            document.getElementById('summary-total-price').innerText = `LKR ${total.toLocaleString()}`;
+        }
+
+        function openQuickView(id) {
+            const p = productsData.find(item => item.id === id);
+            currentQVProduct = p;
+            qvQuantity = 1;
+
+            document.getElementById('qv-image').src = p.image;
+            document.getElementById('qv-category').innerText = p.categoryLabel;
+            document.getElementById('qv-title').innerText = p.name;
+            document.getElementById('qv-price').innerText = `LKR ${p.price.toLocaleString()}`;
+            document.getElementById('qv-description').innerText = p.description;
+            document.getElementById('qv-qty').innerText = qvQuantity;
+
+            document.getElementById('quickview-modal').classList.remove('hidden');
+        }
+
+        function addToCart(id, qty = 1) {
+            const product = productsData.find(p => p.id === id);
+            const existing = cart.find(item => item.id === id);
+
+            if (existing) {
+                existing.quantity += qty;
+            } else {
+                cart.push({ ...product, quantity: qty });
+            }
+
+            updateCartUI();
+            showToast(`${product.name} added to cart!`);
+
+            // Trigger delight confetti
+            confetti({
+                particleCount: 30,
+                spread: 60,
+                origin: { y: 0.8 },
+                colors: ['#d4af37', '#f0d376', '#ffffff']
+            });
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items-container');
+            container.innerHTML = '';
+
+            let total = 0;
+            let totalCount = 0;
+
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-gray-500 text-xs">Your cart is empty. Explore our collection!</div>`;
+            } else {
+                cart.forEach((item, index) => {
+                    const itemTotal = item.price * item.quantity;
+                    total += itemTotal;
+                    totalCount += item.quantity;
+
+                    const cartRow = document.createElement('div');
+                    cartRow.className = "flex items-center justify-between bg-choc-800 p-3 rounded-2xl border border-choc-700";
+                    cartRow.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <img src="${item.image}" class="w-12 h-12 rounded-xl object-cover">
+                            <div>
+                                <p class="text-xs font-bold text-cream-50">${item.name}</p>
+                                <p class="text-[10px] text-gold-400">LKR ${item.price.toLocaleString()} x ${item.quantity}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="changeCartQty(${index}, -1)" class="w-6 h-6 rounded-lg bg-choc-700 text-gold-400 flex items-center justify-center text-xs">-</button>
+                            <span class="text-xs font-bold">${item.quantity}</span>
+                            <button onclick="changeCartQty(${index}, 1)" class="w-6 h-6 rounded-lg bg-choc-700 text-gold-400 flex items-center justify-center text-xs">+</button>
+                        </div>
+                    `;
+                    container.appendChild(cartRow);
+                });
+            }
+
+            document.getElementById('cart-badge').innerText = totalCount;
+            document.getElementById('cart-total-price').innerText = `LKR ${total.toLocaleString()}`;
+        }
+
+        function changeCartQty(index, change) {
+            cart[index].quantity += change;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        function checkoutCartWhatsApp() {
+            if (cart.length === 0) {
+                showToast("Your cart is empty!");
+                return;
+            }
+
+            const address = document.getElementById('cart-address-input').value.trim() || "Delivery address to be specified in chat";
+            
+            let message = `*NEW ORDER - GIFT ME CHOCOLATES* 🎁🍫\n\n`;
+            message += `*Ordered Items:*\n`;
+
+            let grandTotal = 0;
+            cart.forEach(item => {
+                const sub = item.price * item.quantity;
+                grandTotal += sub;
+                message += `• ${item.name} (${item.quantity}x) - LKR ${sub.toLocaleString()}\n`;
+            });
+
+            message += `\n*Total Amount:* LKR ${grandTotal.toLocaleString()}\n`;
+            message += `*Delivery Info:* ${address}\n\n`;
+            message += `Please confirm my order & payment details! Thank you!`;
+
+            const encoded = encodeURIComponent(message);
+            window.open(`https://wa.me/94771234567?text=${encoded}`, '_blank');
+        }
+
+        function checkoutCustomBoxWhatsApp() {
+            const cardMsg = document.getElementById('custom-card-text').value.trim() || "No custom message";
+            const itemsTotal = selectedBuilderItems.reduce((sum, item) => sum + item.price, 0);
+            const total = customBoxPrice + itemsTotal;
+
+            let message = `*CUSTOM GIFT BOX ORDER - GIFT ME* 🎁\n\n`;
+            message += `*Box Packaging:* ${customBoxStyle} (LKR ${customBoxPrice.toLocaleString()})\n\n`;
+            message += `*Selected Sweets:* \n`;
+
+            if (selectedBuilderItems.length === 0) {
+                message += `• Assorted Chef Selection\n`;
+            } else {
+                selectedBuilderItems.forEach(item => {
+                    message += `• ${item.name} (LKR ${item.price.toLocaleString()})\n`;
+                });
+            }
+
+            message += `\n*Personalized Card Message:*\n"${cardMsg}"\n\n`;
+            message += `*Total Estimated Price:* LKR ${total.toLocaleString()}\n\n`;
+            message += `Please assemble this gift box for me!`;
+
+            const encoded = encodeURIComponent(message);
+            window.open(`https://wa.me/94771234567?text=${encoded}`, '_blank');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // Initial Renders
+            renderProducts('all');
+            renderBuilderItems();
+            updateBuilderSummary();
+
+            // Background Particles Animation Canvas
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            for (let i = 0; i < 40; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 2 + 1,
+                    alpha: Math.random() * 0.5 + 0.2,
+                    speedY: -Math.random() * 0.5 - 0.2
+                });
+            }
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(212, 175, 55, ${p.alpha})`;
+                    ctx.fill();
+
+                    p.y += p.speedY;
+                    if (p.y < 0) {
+                        p.y = canvas.height;
+                        p.x = Math.random() * canvas.width;
+                    }
+                });
+                requestAnimationFrame(animateParticles);
+            }
+            animateParticles();
+
+            // Category Filter Tab Clicks
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.filter-btn').forEach(b => {
+                        b.classList.remove('active', 'bg-gold-500', 'text-choc-900', 'font-bold');
+                        b.classList.add('bg-choc-800', 'text-cream-100');
+                    });
+
+                    e.target.classList.add('active', 'bg-gold-500', 'text-choc-900', 'font-bold');
+                    renderProducts(e.target.dataset.filter);
+                });
+            });
+
+            // Packaging Box Options Click
+            document.querySelectorAll('.box-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.box-option').forEach(o => o.classList.remove('border-gold-500', 'active'));
+                    option.classList.add('border-gold-500', 'active');
+                    customBoxStyle = option.dataset.style;
+                    customBoxPrice = parseInt(option.dataset.price);
+                    updateBuilderSummary();
+                });
+            });
+
+            // Cart Modal Toggle
+            const cartDrawer = document.getElementById('cart-drawer');
+            document.getElementById('open-cart-btn').addEventListener('click', () => cartDrawer.classList.remove('hidden'));
+            document.getElementById('close-cart-btn').addEventListener('click', () => cartDrawer.classList.add('hidden'));
+            document.getElementById('cart-backdrop').addEventListener('click', () => cartDrawer.classList.add('hidden'));
+
+            // Quick View Modal Controls
+            const qvModal = document.getElementById('quickview-modal');
+            document.getElementById('close-quickview').addEventListener('click', () => qvModal.classList.add('hidden'));
+            document.getElementById('qv-minus').addEventListener('click', () => {
+                if (qvQuantity > 1) {
+                    qvQuantity--;
+                    document.getElementById('qv-qty').innerText = qvQuantity;
+                }
+            });
+            document.getElementById('qv-plus').addEventListener('click', () => {
+                qvQuantity++;
+                document.getElementById('qv-qty').innerText = qvQuantity;
+            });
+            document.getElementById('qv-add-cart-btn').addEventListener('click', () => {
+                if (currentQVProduct) {
+                    addToCart(currentQVProduct.id, qvQuantity);
+                    qvModal.classList.add('hidden');
+                }
+            });
+
+            // WhatsApp Checkout Actions
+            document.getElementById('cart-whatsapp-checkout-btn').addEventListener('click', checkoutCartWhatsApp);
+            document.getElementById('submit-custom-box-btn').addEventListener('click', checkoutCustomBoxWhatsApp);
+
+            // FAQ Accordion
+            document.querySelectorAll('.faq-toggle').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const content = btn.nextElementSibling;
+                    const icon = btn.querySelector('i');
+                    content.classList.toggle('hidden');
+                    icon.classList.toggle('rotate-180');
+                });
+            });
+
+            // Mobile Menu Toggle
+            const mobileMenu = document.getElementById('mobile-menu');
+            document.getElementById('mobile-menu-toggle').addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            document.querySelectorAll('.mobile-nav-link').forEach(l => {
+                l.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+            });
+
+            // GSAP Animations
+            gsap.from("#home h1", { opacity: 0, y: 30, duration: 1, delay: 0.2 });
+            gsap.from("#home p", { opacity: 0, y: 20, duration: 1, delay: 0.4 });
+            gsap.from("#home-img", { opacity: 0, scale: 0.9, duration: 1.2, delay: 0.5 });
+
+        });
+    </script>
+</body>
+</html>
